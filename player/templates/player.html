@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+
+{% block extrabutton %}
+{% load static %}
+{% if user.user_type == 'staff' %}
+<div class="flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
+  <a href="{% url 'staff_dashboard' %}" class="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-gray-900 rounded-lg border border-gray-300 hover:bg-pink-200 focus:ring-4 focus:ring-pink-100">
+      <h3 class="ml-2 font-bold"> staff dashboard </h3>
+  </a>  
+</div>
+{% elif user.user_type == 'artist' %}
+
+{% else %}
+<div class="flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
+  <a href="{% url 'register_certified_user' %}" class="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-gray-900 rounded-lg border border-gray-300 hover:bg-pink-200 focus:ring-4 focus:ring-pink-100">
+      <img class="w-8" src="{% static 'Certify.svg' %}" alt="" srcset="">
+      <h3 class="ml-2 font-bold"> Get Certified </h3>
+  </a>  
+</div>
+{% endif %}
+{% endblock extrabutton %}
+
+{% block content %}
+<div class="flex w-full h-full">
+    <!-- Column 1 with 1/4 width -->
+    <div class="w-1/6 p-2 overflow-y-auto">
+      <div class='flex flex-col'>
+        <div class='flex flex-col px-8 py-4'>
+          <h2 class='flex justify-center rounded-full bg-gray-100 p-2 text-xl font-bold mb-6'>Uploads</h2>
+          <a href="{% url 'add_song' %}"><button type="button" class="w-full text-blue-700 hover:text-blue-700 hover:bg-blue-100 focus:ring-4 focus:ring-blue-300 font-medium rounded-full  text-xs px-5 py-2 me-2 mb-2 focus:outline-none">Add Song</button></a>
+          <a href="{% url 'add_podcast' %}"><button type="button" class="w-full text-blue-700 hover:text-blue-700 hover:bg-blue-100 focus:ring-4 focus:ring-blue-300 font-medium rounded-full  text-xs px-5 py-2 me-2 mb-2 focus:outline-none">Add Podcast</button></a>
+          <a href="{% url 'add_playlist' %}"><button type="button" class="w-full text-blue-700 hover:text-blue-700 hover:bg-blue-100 focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-xs px-5 py-2 me-2 mb-2 focus:outline-none">Add Playlist</button></a>
+          <a href="{% url 'add_album' %}"><button type="button" class="w-full text-blue-700 hover:text-blue-700 hover:bg-blue-100 focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-xs px-5 py-2 me-2   mb-2 focus:outline-none">Add Album</button></a>
+          {% comment %} <a href="{% url 'add_lyric' %}"><button type="button" class="w-full text-blue-700 hover:text-blue-700 hover:bg-blue-100 focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-xs px-5 py-2 me-2   mb-2 focus:outline-none">Add Lyric</button></a> {% endcomment %}
+          <a href="{% url 'update_profile' user_id=user.id %}"><button type="button" class="w-full text-blue-700 hover:text-blue-700 hover:bg-blue-100 focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-xs px-5 py-2 me-2   mb-2 focus:outline-none">Edit Profile</button></a>
+        </div>
+        <div class='flex flex-col px-8 py-4'>
+          <h2 class='flex justify-center rounded-full bg-gray-100 p-2 text-xl font-bold mb-6'>Playlist</h2>
+          {% for playlist in playlists %}
+          <a href="{% url 'playlist_detail' playlist_id=playlist.id %}"><button type="button" class="w-full border text-red-700 hover:text-black hover:bg-blue-100 focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 me-2   mb-2 focus:outline-none"><h1 class='font-bold text-sm'>{{playlist.title}}</h1><h1 class='text-bold text-xs'>{{playlist.song_count}} songs</h1></button></a>
+          {% endfor %}
+        </div>
+        <div class='flex flex-col px-8 py-4'>
+          <h2 class='flex justify-center text-xs font-bold mb-3'>Playlists of other people</h2>
+          {% for playlist in oplaylists %}
+          <a href="{% url 'playlist_detail' playlist_id=playlist.id %}"><button type="button" class="w-full border text-green-700 hover:text-black hover:bg-blue-100 focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 me-2   mb-2 focus:outline-none"><h1 class='font-bold text-sm'>{{playlist.title}}</h1><h1 class='text-bold text-xs'>{{playlist.owner.username}} - {{playlist.song_count}} songs</h1></button></a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  
+    <!-- Column 2 with 1/2 width -->
+    <div class="w-7/12 p-4 overflow-y-auto">
+        <h2 class="text-2xl font-bold text-center">Welcome to the Club</h2>
+        <div class='flex rounded-lg justify-center'>
+        {% if songs %}
+        {% for song in featured %}
+          <div class='border-2 rounded-lg flex flex-col m-4 hover:bg-gray-200' style='width:220px; height:320px'>
+            <div class='relative opacity-70 hover:opacity-100'>
+            <img src="
+            {% if song.podcast %}
+            {% static 'Podcast.png' %}
+            {% else %}
+            {% static 'wave.png' %}
+            {% endif %}
+              " alt="Play-sign" class='absolute right-2 top-2 rounded-full p-1 
+              {% if song.podcast %}
+              bg-pink-300
+              {% else %}
+              bg-purple-300
+              {% endif %}
+                ' style='width:30px; height:30px; object-fit: cover;'>
+            </div>
+            <div class='relative opacity-0 hover:opacity-50 ease-in-out duration-500 bg-gray-400'>
+              <img onclick="playSong('{{ song.title }}', '{{ song.artist }}', '{{ song.album }}', '{{ song.cover_image.url }}', '{{ song.audio_file.url }}')" src="{% static 'play-circle.svg' %}" alt="Play-sign" class='absolute w-auto h-auto p-12' style='object-fit: cover;'>
+              </div>
+            <img class="playButton" data-src="{{ song.audio_file.url }}" style='width:220px; height:220px; object-fit: cover;border-radius: 3% 3% 0 0;' src="{{ song.cover_image.url }}" alt="cover_image">
+            <h1 class='px-2 text-center font-bold pt-2 overflow-visible'>{{song.title}}</h1>
+            <a href="{% url 'user_profile' user_id=song.artist.id %}"><h1 class='px-2 text-center text-xs pb-2 overflow-auto hover:text-blue-800'>{{song.artist}}</h1></a>
+            <div class='mx-3 flex'>
+            {% comment %} <button class='mb-1' onclick="playSong('{{ song.title }}', '{{ song.artist }}', '{{ song.album }}', '{{ song.cover_image.url }}', '{{ song.audio_file.url }}')"><img src="{% static 'play.svg' %}" alt="Play-sign" class='w-32 h-32 rounded-full p-2 bg-green-300' style='width:30px; height:30px; object-fit: cover;'></button> {% endcomment %}
+            
+            <div class="dropdown">
+              <button>
+                <img src="{% static 'plus-icon.svg' %}" alt="Play-sign" class='rounded-full p-2 bg-pink-300' style='width:30px; height:30px; object-fit: cover;'>
+              </button>
+              <div class="dropdown-content">
+                {% for playlist in playlists %}
+                <a href="{% url 'add_song_playlist' playlist_id=playlist.id song_id=song.id %}">{{playlist.title}}</a>
+                {% endfor %}
+              </div>
+            </div>
+
+            </div>
+          </div>
+        {% endfor %}
+
+        {% else %}
+        <h1 class='text-xl text-center mx-auto my-32 italic font-bold'>No Songs found in the Database</h1>
+        {% endif %}
+      </div>
+
+
+      <section>
+        <div class=" px-4 mx-auto max-w-screen-2xl">
+            <div class="relative bg-white shadow-md sm:rounded-lg">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-500">
+                        <tbody>
+                          {% for song in songs %}
+                            <tr class=" hover:bg-gray-100
+                            {% if song.artist.user_type == 'artist' %}
+                            hover:bg-pink-100
+                            {% endif %}
+                            ">
+                                <th onclick="playSong('{{ song.title }}', '{{ song.artist }}', '{{ song.album }}', '{{ song.cover_image.url }}', '{{ song.audio_file.url }}')" scope="row" class="flex items-center px-4 py-2 font-medium text-gray-900 whitespace-nowrap">
+                                  
+                                  {% if song.cover_image.url != None %}
+                                  <img src="{{ song.cover_image.url }}" alt="" class="w-10 h-10 mr-3 object-cover rounded-full">
+                                  {% endif %}
+                                    {{song.title}}
+                                </th>
+                                <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap">
+                                  <a href="{% url 'user_profile' user_id=song.artist.id %}"><div class="flex items-center">
+                                    
+                                    {% if song.artist.user_type == 'artist' %}
+                                    <img src='{% static "Certify.svg" %}' class="inline-block w-4 h-4 mr-2 bg-red-700 rounded-full">
+                                    {% endif %}
+                                    {{song.artist}}
+                                    {{song.SSP}}
+                                  </div></a>
+                                </td>
+                                <td class="px-4 py-2">
+                                    <span class="bg-primary-100 text-primary-800 text-xs font-medium rounded flex flex-row"><img src="
+                                      {% if song.podcast %}
+                                      {% static 'Podcast.png' %}
+                                      {% else %}
+                                      {% static 'wave.png' %}
+                                      {% endif %}
+                                        " alt="Play-sign" class='p-1 rounded-full 
+                                        {% if song.podcast %}
+                                        bg-pink-300
+                                        {% else %}
+                                        bg-purple-300
+                                        {% endif %}
+                                          ' style='width:30px; height:30px; object-fit: cover;'>
+                                      </div> <h1 class='mx-2 my-auto text-xs'>
+                                      {{song.bio}}
+                                    </h1>
+                                    {% if song.artist == user %}
+                                    <a href='{% url "delete_song" u_id=song.id %}' class='text-red-600 mx-2 my-auto text-xs'>
+                                      Delete
+                                    </a>
+                                    {% endif %}
+                                    </span>
+                                </td>
+                                
+                                <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap" onclick="playSong('{{ song.title }}', '{{ song.artist }}', '{{ song.album }}', '{{ song.cover_image.url }}', '{{ song.audio_file.url }}')"><img src="{% static 'play.svg' %}" alt="Play-sign" class='w-32 h-32 rounded-full p-2 bg-green-300' style='width:30px; height:30px; object-fit: cover;'></button></td>
+                                <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap "><div class="dropdown">
+                                  <button>
+                                    <img src="{% static 'plus-icon.svg' %}" alt="Play-sign" class='rounded-full p-2 bg-pink-300' style='width:30px; height:30px; object-fit: cover;'>
+                                  </button>
+                                  <div class="dropdown-content bg-white border-2 rounded-lg">
+                                    <h1 class='text-xs p-1 rounded-lg'>Playlists</h1>
+                                    {% for playlist in playlists %}
+                                    <a href="{% url 'add_song_playlist' playlist_id=playlist.id song_id=song.id %}">{{playlist.title}}</a>
+                                    {% endfor %}
+                                  </div>
+                                </div>
+                              </td>
+                                <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap ">
+                                  {% if song.artist == user %}
+                                  <div class="dropdown">
+                                    <button class='rounded-full bg-red-900'>
+                                      <div class='border-2 border-white h-3 w-3 padding-1 m-2'></div>
+                                    </button>
+                                    
+                                    <div class="dropdown-content bg-white border-3 rounded-lg">
+                                      <h1 class='text-xs p-1 rounded-lg'>Album</h1>
+                                      
+                                      {% for album in myalbums %}
+                                      <a href="{% url 'add_song_album_view' album_id=album.id song_id=song.id %}">{{album.title}}</a>
+                                      {% endfor %}
+                                    </div>
+                                  </div>
+                                  {% endif %}
+                                </td>
+                                <td class="flex flex-row px-4 py-2 font-medium text-gray-900 whitespace-nowrap ">
+                                  {% if song.album == None %}
+                                  <h1 class='italic'>No album</h1>
+                                  {% else %}
+                                  <a href="{% url 'album_detail' album_id=song.album.id %}">{{ song.album }}</a>
+                                  {% endif %}
+                                  - {{ song.genre }}
+                                  {{ song.emotion }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+      </section>
+    </div>
+  
+    <!-- Column 3 with 1/4 width -->
+    <div class="flex flex-col w-3/12 p-4">
+      <div class="rounded-lg my-2 h-auto p-4 border-2">
+        <div class='flex'>
+          <h1 class='text-sm p-1 pr-4'>Aritst</h1>
+          <a href="{% url 'user_list' %}"><button type="button" class="text-blue-700 border-2 hover:text-blue-700 hover:bg-blue-100 focus:ring-4 focus:ring-blue-300 font-medium rounded-full  text-xs px-5 py-1 me-2 focus:outline-none ">Search</button></a>
+        </div>
+        <div class='flex overflow-x-auto py-1'>
+        {% if friends %}
+          {% for friend in friends %}
+          <a href="{% url 'user_profile' user_id=friend.id %}">
+          <div class = "flex flex-col items-center justify-center p-4 pl-2">
+                <img src="
+                {% if friend.image.url != None %}
+                {{ friend.image.url }}
+                {% else %}
+                {% static 'PP.jpg' %}
+                {% endif %}
+                " alt="User Cover" class="w-20 h-20 object-cover rounded-full 
+                {% if friend.user_type == 'artist' %}
+                border-2 border-pink-300
+                shadow-lg shadow-pink-300
+                {% else %}
+                border-2
+                shadow-lg
+                {% endif %}
+                 ">
+            
+            <h1 class='mx-4 py-2 text-xs'>{{friend.username}}</h1>
+          </div>
+        </a>
+        {% endfor %}
+        {% else %}
+        <h1 class='text-xl text-center mx-auto my-3'>You have no Friends</h1>
+        {% endif %}
+        </div>
+      </div>
+      <div class="rounded-lg my-2 p-4 border-2">
+        <h1 class='text-sm'>Albums</h1>
+        <div class='flex overflow-x-auto py-1'>
+        {% for album in albums %}
+        <a href="{% url 'album_detail' album_id=album.id %}">
+        <div class = "flex flex-col items-center justify-center p-4 rounded-lg hover:bg-gray-200">
+          <img src="
+          {% if album.cover_image.url != None %}
+          {{ album.cover_image.url }}
+          {% else %}
+          {% static 'mask.png' %}
+          {% endif %}
+          " alt="User Cover" class="w-20 h-20 object-cover rounded-lg 
+          {% if album.artist.user_type == 'artist' %}
+          border-2 border-pink-300
+          shadow-lg shadow-pink-300
+          {% else %}
+          border-2
+          shadow-lg
+          {% endif %}
+           ">
+      
+          <h1 class='mx-2 py-1 text-xs'>{{album.title}}</h1>
+        </div>
+        </a>
+        {% endfor %}
+        {% for album in myalbums %}
+        <a href="{% url 'album_detail' album_id=album.id %}">
+        <div class = "flex flex-col items-center justify-center p-4 rounded-lg hover:bg-gray-200">
+          <img src="
+          {% if album.cover_image.url != None %}
+          {{ album.cover_image.url }}
+          {% else %}
+          {% static 'mask.png' %}
+          {% endif %}
+          " alt="User Cover" class="w-20 h-20 object-cover rounded-lg border-2 border-green-700 hover:shadow-xl shadow-green-700 ease-in-out duration-300">
+      
+          <h1 class='mx-2 py-1 text-xs'>{{album.title}}</h1>
+        </div>
+        </a>
+        {% endfor %}
+      </div>
+      </div>
+      <div class="rounded-lg my-2 h-1/6">
+        {% comment %} <h1>Other</h1> {% endcomment %}
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock content %}

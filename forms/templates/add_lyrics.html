@@ -1,0 +1,13 @@
+{% extends "baseForm.html" %}
+
+{% block title %}Add Lyrics{% endblock title %}
+
+{% block content %}
+{% load static %}
+<form method="post">
+  <h2>Add Lyrics</h2>
+  {% csrf_token %}
+  {{ form.as_p }}
+<button type="submit">add</button>
+</form>
+{% endblock content %}

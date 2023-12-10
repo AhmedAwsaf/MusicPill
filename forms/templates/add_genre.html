@@ -1,0 +1,13 @@
+{% extends "baseForm.html" %}
+
+{% block title %}Add Genre{% endblock title %}
+
+{% block content %}
+{% load static %}
+<form method="post">
+  <h2>Add Genre</h2>
+  {% csrf_token %}
+  {{ form.as_p }}
+<button type="submit">add</button>
+</form>
+{% endblock content %}

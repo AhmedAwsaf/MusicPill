@@ -1,0 +1,70 @@
+body {
+    font-family: 'Arial', sans-serif;
+}
+
+form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: #0048a7;
+    color: white;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #0048a7;
+}
+
+h2 {
+    text-align: center;
+}
+
+.logoa{
+    display: flex;
+}
+.logoa h1{
+    padding-left: 8px;
+}
+
+textarea{
+    width: 600px;
+    resize: none;
+}
+
+a{
+    color: black;
+    text-decoration: none;
+}
+a:link {
+    color: black;
+    text-decoration: none;
+}
+  
+
+a:visited {
+  color: black;
+  text-decoration: none;
+}
+
+a:hover {
+  color: rgba(0, 0, 0, 0.815);
+  text-decoration: none;
+}
+
+a:active {
+  color: black;
+  text-decoration: none;
+}

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Web Player{% endblock title %}
+
+{% block extrabutton %}
+<a href="{% url 'webplayer' %}"><button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+    Web Player
+</button></a>
+{% endblock extrabutton %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center">
+
+    <div class="w-full border-2 max-w-4xl m-4 p-6 pt-8 bg-white rounded-lg shadow-md">
+        <h2 class="text-3xl font-semibold text-blue-800 mb-6 ">User List</h2>
+
+        <form method="get" action="{% url 'user_list' %}" class="mb-6 flex ">
+            {{ search_form.as_p }}
+            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded mx-2">Search</button>
+        </form>
+
+        {% for user in users %}
+        {% if user != request.user %}
+            <div class="bg-white p-6 mb-6 rounded-lg shadow-md flex items-center border-2">
+                <!-- Add cover image box -->
+                <div class="w-16 h-16 overflow-hidden rounded-full mr-4">
+                    {% if user.image.url != None %}
+                    <img src="{{ user.image.url }}" alt="User Cover" class="w-full h-full object-cover">
+                    {% else %}
+                    <img src="{% static 'PP.jpg' %}" alt="User Cover" class="w-full h-full object-cover">
+                    {% endif %}
+                </div>
+
+                <div>
+                    <a href="" class='flex m-1'>
+                        {% if user.user_type == 'artist' %}
+                        <img class='w-5 h-5 object-cover my-auto mx-2' src="{% static 'Certify.svg' %}" alt="Cert">
+                        
+                        <p class="text-lg font-semibold text-pink-900 hover:text-pink-700 my-auto">
+                            {{ user.username }}
+                        </p>
+                        {% else %}
+                        <p class="text-lg font-semibold text-blue-900 hover:text-blue-700 my-auto">
+                            {{ user.username }}
+                        </p>
+                        {% endif %}
+                    </a>
+                    <p class="text-blue-600">{{ user.email }}</p>
+                    <!-- Add more user details as needed -->
+
+                    {% if user != request.user %}
+                        {% if user in request.user.friends.all %}
+                            <form method="post" action="{% url 'remove_friend' friend_id=user.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="text-red-700 border-2 border-red-300 hover:text-red-700 hover:bg-red-100 focus:ring-4 focus:ring-red-300 font-medium rounded-full px-5 py-1 m-2 focus:outline-none">Remove Artist</button>
+                            </form>
+                        {% elif user not in request.user.friends.all %}
+                            <form method="post" action="{% url 'add_friend' friend_id=user.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="text-blue-700 border-2 border-blue-300 hover:text-blue-700 hover:bg-blue-100 focus:ring-4 focus:ring-blue-300 font-medium rounded-full px-5 py-1 m-2 focus:outline-none">Add Artist</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+        {% endfor %}
+
+        {% if is_paginated %}
+            <div class="flex justify-between mt-6">
+                {% if users.has_previous %}
+                    <a href="?page=1" class="text-blue-500">&laquo; first</a>
+                    <a href="?page={{ users.previous_page_number }}" class="text-blue-500">previous</a>
+                {% endif %}
+
+                <span class="text-blue-800">
+                    Page {{ users.number }} of {{ users.paginator.num_pages }}.
+                </span>
+
+                {% if users.has_next %}
+                    <a href="?page={{ users.next_page_number }}" class="text-blue-500">next</a>
+                    <a href="?page={{ users.paginator.num_pages }}" class="text-blue-500">last &raquo;</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+
+
+
+{% endblock content %}
+{% block Noplayer %}
+<h1></h1>
+{% endblock Noplayer %}

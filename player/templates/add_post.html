@@ -1,0 +1,9 @@
+
+<h2 class="text-2xl font-bold mb-4">Post Section</h2>
+<!-- Post creation form -->
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ post_form.as_p }}
+  <!-- Change the button color using inline styling -->
+  <button type="submit" style="margin:40px;padding:18px; background-color: #3780ee; color: rgb(255, 255, 255);">Post</button>
+</form>

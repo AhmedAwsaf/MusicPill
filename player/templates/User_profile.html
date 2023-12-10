@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+    <style>
+      
+        .dropbtn {
+          background-color: #04AA6D;
+          color: white;
+          font-size: 16px;
+          border: none;
+        }
+        
+        .dropdown {
+          position: relative;
+          display: inline-block;
+        }
+        
+        .dropdown-content {
+          display: none;
+          position: absolute;
+          background-color: #f1f1f1;
+          min-width: 160px;
+          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+          z-index: 1;
+        }
+        
+        .dropdown-content a {
+          color: black;
+          padding: 12px 16px;
+          text-decoration: none;
+          display: block;
+        }
+        
+        .dropdown-content a:hover {background-color: #ddd;}
+        
+        .dropdown:hover .dropdown-content {display: block;}
+        
+        .dropdown:hover .dropbtn {background-color: #3e8e41;}
+        </style>
+</head>
+<body>
+{% load static %}
+    
+   <div class='flex h-screen w-screen'>
+    <div class='w-1/4'>
+        <div class='p-8 flex justify-center'>
+            <a href="{% url 'webplayer' %}" class="flex items-center space-x-3 rtl:space-x-reverse">
+                <img src="{% static 'LOGO.svg' %}" class="h-8" alt="MusicPill Logo" />
+                <span class="self-center text-2xl font-semibold whitespace-nowrap">MusicPill</span>
+            </a>
+        </div>
+        <div class='flex flex-col px-8 py-4'>
+            <h2 class='flex justify-center rounded-full bg-gray-100 p-2 text-xl font-bold mb-6'>Songs</h2>
+            {% for song in songs %}
+            <a href="{% if song.artist == user %}{% url 'update_song' song_id=song.id %}{% endif %}"><button type="button" class="w-full border hover:bg-blue-100 focus:ring-4 focus:ring-blue-300 rounded-full text-sm px-5 py-2.5 me-2   mb-2 focus:outline-none"><h1 class='text-sm'>{{song.title}}</h1></button></a>
+            {% endfor %}
+          </div>
+        <div class='flex flex-col px-8 py-4'>
+            <h2 class='flex justify-center rounded-full bg-gray-100 p-2 text-xl font-bold mb-6'>Playlist</h2>
+            {% for playlist in playlists %}
+            <a href="{% url 'playlist_detail' playlist_id=playlist.id %}"><button type="button" class="w-full border text-red-700 hover:text-black hover:bg-blue-100 focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 me-2   mb-2 focus:outline-none"><h1 class='font-bold text-sm'>{{playlist.title}}</h1><h1 class='text-bold text-xs'>{{playlist.song_count}} songs</h1></button></a>
+            {% endfor %}
+          </div>
+    </div>
+    <div class='w-2/4'>
+        <div class=" mx-auto bg-white p-4 rounded shadow">
+
+            
+            {% if post_form %}
+            <div class='p-4 pb-8'>
+                {% include 'add_post.html' %}
+            </div>
+            {% endif %}
+    
+            <!-- Scrollable Post Section -->
+            <h1 class='text-lg text-bold p-4'>Your Posts</h1>
+            <center>
+              {% for post in posts %}
+                <div class="post-container border-10 m-10" style="position: relative; border: 1px solid #ccc; padding: 10px;">
+                  <h4 style="border-bottom: 5px solid #3b5bdc; padding-bottom: 5px;">{{ post.title }}</h4>
+                  <p style="border-bottom: 0px solid #ccc; padding-bottom: 5px;">{{ post.description }}</p>
+                  {% if post.video_link %}
+                    <p style="border-bottom: 0px solid #3b62e3; padding-bottom: 5px;"><strong>Video Link:</strong> <a href="{{ post.video_link }}" target="_blank" style="text-decoration:      underline; color: #3b62e3;">{{ post.video_link }}</a></p>
+                  {% endif %}
+                  {% if post.url %}
+                    <p style="border-bottom: 1px solid #289946; padding-bottom: 5px;"><strong>Link:</strong> <a href="{{ post.url}}" target="_blank">{{ post.url }}</a></p>
+                  {% endif %}
+                  {% if post.banner_image %}
+                    <img style="border: 1px solid #ccc; padding: 5px;" width="600px" height="800px" src="{{ post.banner_image.url }}" alt="">
+                  {% endif %}
+                
+                  <!-- Simple dropdown for edit and delete options -->
+                  {% if request.user == main_user %}
+                    <div class="dropdown" style="position: absolute; top: 0; right: 0;">
+                      <button class="dropbtn rounded-lg" style="background-color: #3780ee; color: rgb(255, 255, 255); width: 30px; height: 30px; padding: 5px;  ">...</button>
+                      <div class="dropdown-content" style="min-width: 100px; border: 1px solid #ccc; padding: 5px;"> <!-- Adjust the min-width as needed -->
+                        <!-- Edit option with confirmation -->
+                        <a href="#" style="font-size: 12px;">✎ Edit</a>
+                        <!-- Delete option with confirmation -->
+                        <a href="#" onclick="confirmDelete('{{ post.id }}')" style="font-size: 12px;">🗑 Delete</a>
+                      </div>
+                    </div>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </center>
+        </div>
+    </div>
+
+    <div class='bg-slate-100 w-1/4 h-screen flex justify-center items-center'>
+        <div class='w-4/5 h-5/6 flex flex-col justify-center items-center'>
+            <div class='flex flex-col justify-center items-center'>
+                {% if main_user.image.url != None %}
+                <img src="{{main_user.image.url}}" alt="" class='w-36 h-36 border-2 rounded-full'>
+                {% else %}
+                <img src="{% static 'PP.jpg' %}" alt="" class='w-36 h-36 border-2 rounded-full'>
+                {% endif %}
+                <h1 class='p-4 text-xl'>{{main_user.username}}</h1>
+                <h1 class='p-4 text-xl italic'> ahmedawsaf@gmail.com </h1>
+                <h1 class='p-4 text-xl'>{{main_user.bio}}</h1>
+                <h1 class='p-4 text-xl border-2 border-blue-700'>{{main_user.user_type}}</h1>
+                {% if user.id == main_user.id %}
+                <a href="{% url 'update_profile' user_id=user.id %}" class='m-4 p-4 text-xl border-2 border-blue-700'>Edit Profile</a>{% endif %}
+            </div>
+            
+        </div>
+    </div>
+   </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+    <script>
+        function confirmDelete(postId) {
+          if (confirm("Are you sure you want to delete this post?")) {
+            window.location.href = "{% url 'delete_post' 0 %}".replace("0", postId);
+          }
+        }
+        
+      </script>
+</body>
+</html>

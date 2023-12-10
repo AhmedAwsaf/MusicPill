@@ -1,0 +1,14 @@
+{% extends "baseForm.html" %}
+
+{% block title %}Add Song{% endblock title %}
+
+{% block content %}
+{% load static %}
+    <h2>Register as a Certified User</h2>
+    <h2>{{user.username}}</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Register</button>
+    </form>
+{% endblock content %}

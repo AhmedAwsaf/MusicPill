@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusicPill {% block Title %}{% endblock Title %}</title>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+    {% load static %}
+
+    
+    
+    <link rel="icon" href="{% static 'LOGO.svg' %}" type="image/svg+xml">
+    <style>
+      
+      .dropbtn {
+        background-color: #04AA6D;
+        color: white;
+        font-size: 16px;
+        border: none;
+      }
+      
+      .dropdown {
+        position: relative;
+        display: inline-block;
+      }
+      
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f1f1f1;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+      }
+      
+      .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+      }
+      
+      .dropdown-content a:hover {background-color: #ddd;}
+      
+      .dropdown:hover .dropdown-content {display: block;}
+      
+      .dropdown:hover .dropbtn {background-color: #3e8e41;}
+      </style>
+</head>
+<body class='h-screen'>
+        {% comment %} NAVBAR {% endcomment %}
+        <nav class="bg-gray-100 border-gray-200">
+            <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-4">
+                <a href="{% url 'webplayer' %}" class="flex items-center space-x-3 rtl:space-x-reverse">
+                    <img src="{% static 'LOGO.svg' %}" class="h-8" alt="MusicPill Logo" />
+                    <span class="self-center text-2xl font-semibold whitespace-nowrap">MusicPill</span>
+                </a>
+                <div class="flex items-center space-x-6 rtl:space-x-reverse">
+                    {% if user.is_authenticated %}
+                      <a href="{% url 'user_profile' user_id=request.user.id %}" class='flex items-center'><p class='p-4'>{{ user.username }}</p>
+                      {% if user.image.url != None %}
+                      <img src="{{ user.image.url }}" class='shadow-xl' style='width:40px; height:40px; object-fit: cover; border-radius:100%;' alt="">
+                      {% endif %}</a>
+                      <a href="{% url 'logout_user' %}" class="text-sm  text-red-600 dark:text-red-500 hover:underline">Logout</a>
+                      {% block extrabutton %}{% endblock extrabutton %}
+                        {% else %}
+                        <a href="login/" class="text-sm  text-blue-600 dark:text-blue-500 hover:underline">Login</a>
+                        <a href="register/" class="text-sm  bg-blue-600 text-white rounded-lg px-4 py-2">Register</a>
+                    {% endif %}
+                    
+                </div>
+            </div>
+        </nav>
+<div class='h-4/5'>      
+{% block content %} Are you sure your are in the right place? {% endblock content %}
+</div>
+
+
+{% block Noplayer %}
+<div class="absolute bottom-4 right-8 h-48 w-96 rounded-lg bg-black border-4 shadow-lg">      
+    <div id="audio-player" class="audio-player w-full h-full">
+      <img id="audio-cover" src="{% static 'wave.png' %}" class="absolute right-6 top-6 w-24 h-24 rounded-lg object-cover" alt="Song Cover">
+      <div class="text-white ml-4 p-4">
+          <p id="audio-title" class="text-white text-lg font-bold">Start Playing</p>
+          <p id="audio-artist" class="text-white text-sm italic"></p>
+          <p id="audio-album" class="text-white text-sm"></p>
+      </div>
+    </div>
+
+    <div class="w-full absolute bottom-0 right-0 "><audio id="audio" class="rounded-lg w-full relative bottom-0 right-0" controls></audio></div>
+  </div>
+{% endblock Noplayer %}  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+
+  <script>
+    function playSong(title, artist, album, coverUrl, audioUrl) {
+      const audioPlayer = document.getElementById('audio-player');
+      const audioTitle = document.getElementById('audio-title');
+      const audioArtist = document.getElementById('audio-artist');
+      const audioAlbum = document.getElementById('audio-album');
+      const audioCover = document.getElementById('audio-cover');
+      const audioElement = document.getElementById('audio');
+      
+      if (album == 'None'){
+        audioAlbum.textContent = ''
+      } else{
+        audioAlbum.textContent = album;
+      }
+      audioCover.src = coverUrl;
+      audioTitle.textContent = title;
+      audioArtist.textContent = artist;
+      
+      
+      audioElement.src = audioUrl;
+
+      // Autoplay the audio
+      audioElement.play();
+    }
+    
+</script>
+
+
+</body>
+</html>

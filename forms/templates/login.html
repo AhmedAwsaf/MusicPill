@@ -1,0 +1,17 @@
+{% extends "baseForm.html" %}
+
+{% block title %}User Login{% endblock title %}
+
+{% block content %}
+{% load static %}
+<form method="post">
+  <h2>User Login</h2>
+  {% csrf_token %}
+  {{ form.as_p }}
+  
+<button type="submit">Login</button>
+</form>
+<div>
+  Don't have an account? <a style='color:red;' href="{% url 'register_user' %}">Register here!</a><br/>
+</div>
+{% endblock content %}

@@ -1,0 +1,17 @@
+{% extends "baseForm.html" %}
+
+{% block title %}Update Profile{% endblock title %}
+
+{% block content %}
+    {% load static %}
+    <form method="post" enctype="multipart/form-data">
+        <div class="logoa">
+            <img src="{% static 'LOGO.svg' %}" width='38px' alt="MusicPill Logo" />
+            <h1>Music Pill</h1>
+        </div>
+        <h2>Update Profile</h2>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Update</button>
+    </form>
+{% endblock content %}

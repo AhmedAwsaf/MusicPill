@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <h1>User Management</h1>
+    
+    {% for user in users %}
+    <div class='border-2 p-8 m-2'>
+        <h1>{{user.username}}</h1>
+        <a href="{% url 'activate_toggle' u_id=user.id %}">{{user.is_active}}</a>
+
+        <h1 class='p-4 '>{{user.user_type}}</h1>
+        <a href="{% url 'c_staff' u_id=user.id %}" class='p-2 border-2 '>change to Staff</a>
+        <a href="{% url 'c_standard' u_id=user.id %}" class='p-2 border-2 '>change to Standard</a>
+        <a href="{% url 'c_certified' u_id=user.id %}" class='p-2 border-2 '>change to Certified</a>
+    </div>
+    {% endfor %}
+
+    <div class='p-8'>
+        <a href="{% url 'add_emotion' %}" class='border-2 p-4'>Add Emotion</a> 
+        <a href="{% url 'add_genre' %}" class='border-2 p-4'>Add Genre</a>
+    </div>
+    
+    {% for emotion in emotions %}
+        
+    <div class='border-2 p-8 m-2'>
+        <h1>{{emotion.name}}</h1>
+    </div>
+    {% endfor %}
+    {% for genre in genres %}
+        
+    <div class='border-2 p-8 m-2'>
+        <h1>{{genre.name}}</h1>
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}

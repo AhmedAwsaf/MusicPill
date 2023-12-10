@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extrabutton %}
+<div class="flex flex-col">
+    <a href="{% url 'webplayer' %}" class="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-gray-900 rounded-lg border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-gray-100">
+        <img class="w-8" src="{% static 'LOGO.svg' %}" alt="" srcset="">
+        <h3 class="ml-2 font-bold">Web Player</h3>
+    </a>  
+</div>
+{% endblock extrabutton %}
+
+{% block content %}
+    <div class='flex'>
+    <div class='w-1/6 m-6'>
+      
+      <h1 class='text-2xl font-bold text-center'>Album</h1>
+
+      <div class='flex justify-center item-center p-4'>
+        <img src="{% if album.cover_image.url != None %}
+        {{ album.cover_image.url }}
+        {% else %}
+        {% static 'mask.png' %}
+        {% endif %}" alt="" class='border-2 border-red-900 rounded-lg object-cover w-32 h-32'>
+      </div>
+
+      <h2 class="text-2xl font-bold my-6 flex item-center justify-center">
+        {{ album.title }} 
+        <a href="{% url 'remove_album' album_id=album.id %}"><button class='mx-2'><img src="{% static 'plus-icon.svg' %}" alt="Play-sign" class='rotate-45 w-32 h-32 rounded-full p-2 bg-red-500' style='width:30px; height:30px; object-fit: cover;'></button></a>
+        <a href="{% url 'update_album' album_id=album.id %}"><button class='mx-2'><img src="{% static 'pencil-square-icon.svg' %}" alt="Play-sign" class='w-32 h-32 rounded-lg p-2 bg-blue-500' style='width:30px; height:30px; object-fit: cover;'></button></a>
+      </h2>
+
+      <a href="{% url 'webplayer' %}"><h2 class='flex border-4 hover:bg-gray-300 justify-center rounded-full bg-gray-100 p-2 text-xl font-bold mb-6'>Go Home</h2></a>
+      <h2 class='flex justify-center rounded-full bg-gray-100 p-2 text-xl font-bold mb-6'>Albums</h2>
+          {% for album in friendalbums %}
+          <a href="{% url 'album_detail' album_id=album.id %}"><button type="button" class="w-full border text-red-700 hover:text-black hover:bg-blue-100 focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 me-2   mb-2 focus:outline-none"><h1 class='font-bold text-sm'>{{album.title}}</h1></button></a>
+          {% endfor %}
+          {% for album in myalbums %}
+          <a href="{% url 'album_detail' album_id=album.id %}"><button type="button" class="w-full border text-red-700 hover:text-black hover:bg-blue-100 focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 me-2   mb-2 focus:outline-none"><h1 class='font-bold text-sm'>{{album.title}}</h1></button></a>
+          {% endfor %}
+    </div>
+    <div class='w-4/6'>
+    
+    <div class='flex border p-2 rounded-lg'>
+        
+        {% if albumsongs.songs.all %}
+        {% for song in albumsongs.songs.all %}
+          <div class='border-2 rounded-lg flex flex-col m-4' style='width:220px; height:320px'>
+            <div class='relative opacity-70 hover:opacity-100'>
+            <img src="
+            {% if song.podcast %}
+            {% static 'Podcast.png' %}
+            {% else %}
+            {% static 'wave.png' %}
+            {% endif %}
+              " alt="Play-sign" class='absolute right-2 top-2 rounded-full p-1 
+              {% if song.podcast %}
+              bg-pink-300
+              {% else %}
+              bg-purple-300
+              {% endif %}
+                ' style='width:30px; height:30px; object-fit: cover;'>
+            </div>
+            <img class="playButton" data-src="{{ song.audio_file.url }}" style='width:220px; height:220px; object-fit: cover;border-radius: 3% 3% 0 0;' src="{{ song.cover_image.url }}" alt="cover_image">
+            <h1 class='px-2 text-center font-bold pt-2 overflow-visible'>{{song.title}}</h1>
+            <a href=""><h1 class='px-2 text-center text-xs pb-2 overflow-auto hover:text-blue-800'>{{song.artist}}</h1></a>
+            <div class='mx-3 flex'>
+            <button onclick="playSong('{{ song.title }}', '{{ song.artist }}', '{{ song.album }}', '{{ song.cover_image.url }}', '{{ song.audio_file.url }}')"><img src="{% static 'play.svg' %}" alt="Play-sign" class='w-32 h-32 rounded-full p-2 mb-2 bg-green-300' style='width:30px; height:30px; object-fit: cover;'></button>
+            
+            {% if albumsongs.album.artist == request.user %}
+            <a href="{% url 'remove_song_album_view' album_id=album.id song_id=song.id %}"><button class='ml-2'><img src="{% static 'plus-icon.svg' %}" alt="Play-sign" class='rotate-45 w-32 h-32 rounded-full p-2 bg-red-500' style='width:30px; height:30px; object-fit: cover;'></button></a>
+            {% endif %}
+              
+          </div>
+            
+          </div>
+        {% endfor %}
+
+        {% else %}
+        <h1 class='text-xl text-center mx-auto my-32 italic font-bold'>No Songs found in the Album</h1>
+        {% endif %}
+      </div>
+    </div>
+    </div>
+{% endblock content %}
